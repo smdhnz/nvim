@@ -3,10 +3,10 @@ $ curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appima
 
 $ chmod u+x nvim.appimage
 
-$ mkdir -p $HOME/.appimage/neovim/; mv nvim.appimage $_
+$ mkdir -p /opt/nvim
+$ mv nvim.appimage /opt/nvim/nvim
 
-$ echo 'alias vim="$HOME/.appimage/neovim/nvim.appimage"' >> $HOME/.bashrc
-$ echo 'alias nvim="$HOME/.appimage/neovim/nvim.appimage"' >> $HOME/.bashrc
+$ echo 'export PATH="$PATH:/opt/nvim/"' >> $HOME/.bashrc
 
-$ git clone https://github.com/smdhnz/init.lua.git $HOME/.config/nvim
+$ git clone https://github.com/smdhnz/nvim.git $HOME/.config/nvim
 ```
