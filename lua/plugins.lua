@@ -186,7 +186,7 @@ return {
 
       function _G.show_docs()
         local cw = vim.fn.expand('<cword>')
-        if vim.fn.index({'vim', 'help'}, vim.bo.filetype) >= 0 then
+        if vim.fn.index({ 'vim', 'help' }, vim.bo.filetype) >= 0 then
           vim.api.nvim_command('h ' .. cw)
         elseif vim.api.nvim_eval('coc#rpc#ready()') then
           vim.fn.CocActionAsync('doHover')
@@ -195,10 +195,26 @@ return {
         end
       end
 
-      vim.api.nvim_set_keymap('i', '<Tab>', [[coc#pum#visible() ? coc#pum#next(1) : v:lua.CheckBackspace() ? "<Tab>" : coc#refresh()]], { noremap = true, silent = true, expr = true })
-      vim.api.nvim_set_keymap('i', '<S-Tab>', [[coc#pum#visible() ? coc#pum#prev(1) : "<C-h>"]], { noremap = true, silent = true, expr = true })
-      vim.api.nvim_set_keymap('i', '<CR>', [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"]], { noremap = true, silent = true, expr = true })
-      vim.api.nvim_set_keymap("n", "F", '<CMD>lua _G.show_docs()<CR>', {silent = true})
+      vim.api.nvim_set_keymap('i', '<Tab>',
+        [[coc#pum#visible() ? coc#pum#next(1) : v:lua.CheckBackspace() ? "<Tab>" : coc#refresh()]],
+        { noremap = true, silent = true, expr = true })
+      vim.api.nvim_set_keymap('i', '<S-Tab>', [[coc#pum#visible() ? coc#pum#prev(1) : "<C-h>"]],
+        { noremap = true, silent = true, expr = true })
+      vim.api.nvim_set_keymap('i', '<CR>',
+        [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"]],
+        { noremap = true, silent = true, expr = true })
+      vim.api.nvim_set_keymap("n", "F", '<CMD>lua _G.show_docs()<CR>', { silent = true })
+
+      vim.g.coc_global_extensions = {
+        '@yaegassy/coc-tailwindcss3',
+        '@yaegassy/coc-volar',
+        'coc-docker',
+        'coc-json',
+        'coc-lua',
+        'coc-prettier',
+        'coc-tsserver',
+        'coc-yaml',
+      }
     end,
   },
 }
