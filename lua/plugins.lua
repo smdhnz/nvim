@@ -204,17 +204,6 @@ return {
         [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"]],
         { noremap = true, silent = true, expr = true })
       vim.api.nvim_set_keymap("n", "F", '<CMD>lua _G.show_docs()<CR>', { silent = true })
-
-      vim.g.coc_global_extensions = {
-        '@yaegassy/coc-tailwindcss3',
-        '@yaegassy/coc-volar',
-        'coc-docker',
-        'coc-json',
-        'coc-lua',
-        'coc-prettier',
-        'coc-tsserver',
-        'coc-yaml',
-      }
     end,
   },
 }
