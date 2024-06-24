@@ -1,7 +1,6 @@
 return {
   {
     "numToStr/Comment.nvim",
-    lazy = false,
     opts = {},
   },
 
@@ -16,7 +15,6 @@ return {
 
   {
     "folke/tokyonight.nvim",
-    lazy = false,
     priority = 1000,
     config = function()
       require("tokyonight").setup({
@@ -34,6 +32,7 @@ return {
 
   {
     "nvim-neo-tree/neo-tree.nvim",
+    lazy = true,
     branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",
@@ -80,7 +79,6 @@ return {
 
   {
     "lewis6991/gitsigns.nvim",
-    lazy = false,
     opts = {
       signs = {
         add = { text = "+" },
@@ -97,6 +95,7 @@ return {
 
   {
     "kdheepak/lazygit.nvim",
+    lazy = true,
     keys = {
       { "q", "<CMD>LazyGit<CR>", silent = true, noremap = true },
     },
@@ -109,7 +108,6 @@ return {
 
   {
     "nvim-lualine/lualine.nvim",
-    lazy = false,
     dependencies = { "nvim-tree/nvim-web-devicons" },
     opts = {
       options = {
@@ -131,6 +129,7 @@ return {
 
   {
     "akinsho/toggleterm.nvim",
+    lazy = true,
     version = "*",
     keys = {
       { "<C-\\>", "<CMD>ToggleTerm<CR>", silent = true, noremap = true },
@@ -151,7 +150,6 @@ return {
 
   {
     "nvim-treesitter/nvim-treesitter",
-    lazy = false,
     dependencies = { "yioneko/nvim-yati" },
     build = ":TSUpdate",
     config = function()
@@ -161,8 +159,8 @@ return {
           "json",
           "yaml",
           "tsx",
+          "vue",
           "typescript",
-          -- "markdown",
         },
         auto_install = false,
         highlight = { enable = true },
@@ -173,37 +171,70 @@ return {
     end,
   },
 
+  -- formatter
   {
-    "neoclide/coc.nvim",
+    'stevearc/conform.nvim',
     lazy = false,
-    branch = "release",
     config = function()
-      -- 関数 CheckBackspace の定義
-      function _G.CheckBackspace()
-        local col = vim.fn.col('.') - 1
-        return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
-      end
+      require("conform").setup({
+        formatters_by_ft = {
+          lua = { "stylua" },
+          -- Conform will run multiple formatters sequentially
+          -- python = { "isort", "black" },
+          -- Use a sub-list to run only the first available formatter
+          javascript = { { "prettierd", "prettier" } },
+        },
+        format_on_save = {
+          -- These options will be passed to conform.format()
+          timeout_ms = 500,
+          lsp_format = "fallback",
+        },
+      })
 
-      function _G.show_docs()
-        local cw = vim.fn.expand('<cword>')
-        if vim.fn.index({ 'vim', 'help' }, vim.bo.filetype) >= 0 then
-          vim.api.nvim_command('h ' .. cw)
-        elseif vim.api.nvim_eval('coc#rpc#ready()') then
-          vim.fn.CocActionAsync('doHover')
-        else
-          vim.api.nvim_command('!' .. vim.o.keywordprg .. ' ' .. cw)
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        pattern = "*",
+        callback = function(args)
+          require("conform").format({ bufnr = args.buf })
+        end,
+      })
+    end
+  },
+
+  -- LSP
+  {
+    "neovim/nvim-lspconfig",
+    dependencies = {
+      { "echasnovski/mini.completion", version = false },
+    },
+    config = function()
+      local lspconfig = require("lspconfig")
+      require('mini.completion').setup({})
+
+      lspconfig.tailwindcss.setup({})
+      lspconfig.tsserver.setup({
+        init_options = {
+          plugins = {
+            {
+              name = "@vue/typescript-plugin",
+              location = "/usr/local/lib/node_modules/@vue/typescript-plugin",
+              languages = {"vue"},
+            },
+          },
+        },
+        filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx", "vue" },
+      })
+
+      vim.api.nvim_create_autocmd("LspAttach", {
+        callback = function(_)
+          vim.keymap.set('n', 'F',  '<cmd>lua vim.lsp.buf.hover()<CR>')
+          vim.keymap.set('n', 'g]', '<cmd>lua vim.diagnostic.goto_next()<CR>')
+          vim.keymap.set('n', 'g[', '<cmd>lua vim.diagnostic.goto_prev()<CR>')
         end
-      end
+      })
 
-      vim.api.nvim_set_keymap('i', '<Tab>',
-        [[coc#pum#visible() ? coc#pum#next(1) : v:lua.CheckBackspace() ? "<Tab>" : coc#refresh()]],
-        { noremap = true, silent = true, expr = true })
-      vim.api.nvim_set_keymap('i', '<S-Tab>', [[coc#pum#visible() ? coc#pum#prev(1) : "<C-h>"]],
-        { noremap = true, silent = true, expr = true })
-      vim.api.nvim_set_keymap('i', '<CR>',
-        [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"]],
-        { noremap = true, silent = true, expr = true })
-      vim.api.nvim_set_keymap("n", "F", '<CMD>lua _G.show_docs()<CR>', { silent = true })
-    end,
+      vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+        vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false }
+      )
+    end
   },
 }
