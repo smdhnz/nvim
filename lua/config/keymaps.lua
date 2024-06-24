@@ -25,10 +25,10 @@ map("n", "<C-l>", "<C-w>l", { desc = "Go to right window", noremap = true, silen
 -- search
 map("n", "<esc><esc>", "<cmd>nohlsearch<cr>", { desc = "Escape and clear hlsearch", silent = true })
 map(
-	"n",
-	"<leader><leader>",
-	"<CMD>let @/ = '\\<' . expand('<cword>') . '\\>'<CR><CMD>set hlsearch<CR>",
-	{ desc = "Highlight", silent = true }
+  "n",
+  "<leader><leader>",
+  "<CMD>let @/ = '\\<' . expand('<cword>') . '\\>'<CR><CMD>set hlsearch<CR>",
+  { desc = "Highlight", silent = true }
 )
 map("n", "n", "nzz", { silent = true })
 map("n", "N", "Nzz", { silent = true })
