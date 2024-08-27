@@ -269,15 +269,6 @@ return {
         filetypes = { "typescript", "javascript", "vue" },
       })
 
-      lspconfig.tsserver.setup({
-        filetypes = {
-          "javascript",
-          "javascriptreact",
-          "typescript",
-          "typescriptreact",
-        },
-      })
-
       lspconfig.tailwindcss.setup({})
 
       lspconfig.jedi_language_server.setup({})
