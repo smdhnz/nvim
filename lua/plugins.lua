@@ -195,6 +195,7 @@ return {
         javascript = { { "prettierd", "prettier" } },
         typescript = { { "prettierd", "prettier" } },
         typescriptreact = { { "prettierd", "prettier" } },
+        vue = { { "prettierd", "prettier" } },
         python = { "isort", "black" }
       },
       format_on_save = {
@@ -260,6 +261,13 @@ return {
     "neovim/nvim-lspconfig",
     config = function()
       local lspconfig = require("lspconfig")
+
+      lspconfig.volar.setup({
+        init_options = {
+          vue = { hybridMode = false },
+        },
+        filetypes = { "typescript", "javascript", "vue" },
+      })
 
       lspconfig.tsserver.setup({
         filetypes = {

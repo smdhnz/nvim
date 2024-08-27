@@ -11,7 +11,8 @@ bun add --global \
   @fsouza/prettierd \
   wsl-open \
   typescript typescript-language-server \
-  @tailwindcss/language-server
+  @tailwindcss/language-server \
+  @vue/language-server
 echo 'alias open="wsl-open"' >> $HOME/.bashrc
 
 # Volta and Node.js
