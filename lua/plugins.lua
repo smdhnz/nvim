@@ -176,6 +176,7 @@ return {
           "tsx",
           "vue",
           "dockerfile",
+          "prisma",
         },
         highlight = { enable = true },
         autotag = { enable = true },
