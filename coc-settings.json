@@ -1,20 +1,15 @@
 {
   "prettier.enable": true,
-  "files.associations": {
-    "*.vue": "vue"
-  },
-  "coc.preferences.formatOnSaveFiletypes": [
-    "javascript",
-    "typescript",
-    "json",
-    "yaml",
-    "vue"
-  ],
+  "coc.preferences.formatOnSave": true,
   "diagnostic.floatConfig": {
     "border": true,
     "rounded": true
   },
   "hover.floatConfig": {
+    "border": true,
+    "rounded": true
+  },
+  "suggest.floatConfig": {
     "border": true,
     "rounded": true
   }

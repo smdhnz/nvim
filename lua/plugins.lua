@@ -5,14 +5,6 @@ return {
   },
 
   {
-    "lukas-reineke/indent-blankline.nvim",
-    main = "ibl",
-    ---@module "ibl"
-    ---@type ibl.config
-    opts = {},
-  },
-
-  {
     "phaazon/hop.nvim",
     branch = "v2",
     keys = {
@@ -195,6 +187,7 @@ return {
         "coc-tsserver",
         "coc-yaml",
         "coc-prettier",
+        "coc-prisma",
         "@yaegassy/coc-volar",
         "@yaegassy/coc-tailwindcss3"
       }
@@ -208,7 +201,7 @@ return {
         return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
       end
 
-      -- Use K to show documentation in preview window
+      -- Use F to show documentation in preview window
       function _G.show_docs()
         local cw = vim.fn.expand('<cword>')
         if vim.fn.index({'vim', 'help'}, vim.bo.filetype) >= 0 then
