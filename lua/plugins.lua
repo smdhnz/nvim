@@ -5,6 +5,14 @@ return {
   },
 
   {
+    "shortcuts/no-neck-pain.nvim",
+    version = "*",
+    config = function()
+      vim.api.nvim_set_keymap('n', 'z', ':NoNeckPain<CR>', { noremap = true, silent = true })
+    end
+  },
+
+  {
     "phaazon/hop.nvim",
     branch = "v2",
     keys = {
