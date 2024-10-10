@@ -5,6 +5,16 @@ return {
   },
 
   {
+    'nvim-telescope/telescope.nvim',
+    branch = "0.1.x",
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      local keymap = vim.api.nvim_set_keymap
+      keymap("n", "<C-p>", "<CMD>Telescope live_grep<CR>", { silent = true, noremap = true })
+    end
+  },
+
+  {
     "phaazon/hop.nvim",
     branch = "v2",
     keys = {
