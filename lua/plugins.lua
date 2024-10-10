@@ -7,10 +7,48 @@ return {
   {
     'nvim-telescope/telescope.nvim',
     branch = "0.1.x",
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      {
+        'nvim-telescope/telescope-fzf-native.nvim',
+        build = "make"
+      }
+    },
     config = function()
       local keymap = vim.api.nvim_set_keymap
-      keymap("n", "<C-p>", "<CMD>Telescope live_grep<CR>", { silent = true, noremap = true })
+      keymap("n", "<C-f>", "<CMD>Telescope live_grep<CR>", { silent = true, noremap = true })
+
+      require("telescope").setup({
+        defaults = {
+          file_ignore_patterns = {
+            -- 検索から除外するものを指定
+            "^.git/",
+            "^.venv/",
+            "^node_modules/",
+          },
+          vimgrep_arguments = {
+            -- ripggrepコマンドのオプション
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "-uu",
+          },
+        },
+        extensions = {
+          -- ソート性能を大幅に向上させるfzfを使う
+          fzf = {
+            fuzzy = true,
+            override_generic_sorter = true,
+            override_file_sorter = true,
+            case_mode = "smart_case",
+          },
+        },
+      })
+      require("telescope").load_extension("fzf")
     end
   },
 
