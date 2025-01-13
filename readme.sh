@@ -2,18 +2,10 @@
 sudo apt update && sudo apt upgrade -y
 
 sudo apt install build-essential unzip xsel
-echo 'alias clip="xsel -bi"' >> $HOME/.bashrc
 
-# bun
 curl -fsSL https://bun.sh/install | bash
 
-bun add --global \
-  @fsouza/prettierd \
-  wsl-open \
-  typescript typescript-language-server \
-  @tailwindcss/language-server \
-  @vue/language-server
-echo 'alias open="wsl-open"' >> $HOME/.bashrc
+bun add --global wsl-open
 
 # Volta and Node.js
 curl https://get.volta.sh | bash
@@ -41,3 +33,24 @@ rm -rf lazygit.tar.gz lazygit
 curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh && rm get-docker.sh
 sudo gpasswd -a $USER docker
 sudo service docker restart
+
+# .bashrc
+# aliases
+alias vi="nvim"
+alias vim="nvim"
+alias clip="xsel -bi"
+alias open="wsl-open"
+
+# functions
+function activate () {
+  if [ -f ".venv/bin/activate" ]; then
+    source .venv/bin/activate
+  else
+    python3 -m venv --without-pip .venv &> /dev/null && \
+    source .venv/bin/activate &> /dev/null && \
+    curl -LO https://bootstrap.pypa.io/get-pip.py &> /dev/null && \
+    python3 get-pip.py &> /dev/null && \
+    rm get-pip.py &> /dev/null && \
+    pip install isort black &> /dev/null
+  fi
+}
