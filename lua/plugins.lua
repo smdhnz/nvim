@@ -5,11 +5,51 @@ return {
   },
 
   {
-    "lukas-reineke/indent-blankline.nvim",
-    main = "ibl",
-    ---@module "ibl"
-    ---@type ibl.config
-    opts = {},
+    'nvim-telescope/telescope.nvim',
+    branch = "0.1.x",
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      {
+        'nvim-telescope/telescope-fzf-native.nvim',
+        build = "make"
+      }
+    },
+    config = function()
+      local keymap = vim.api.nvim_set_keymap
+      keymap("n", "<C-f>", "<CMD>Telescope live_grep<CR>", { silent = true, noremap = true })
+
+      require("telescope").setup({
+        defaults = {
+          file_ignore_patterns = {
+            -- 検索から除外するものを指定
+            "^.git/",
+            "^.venv/",
+            "^node_modules/",
+          },
+          vimgrep_arguments = {
+            -- ripggrepコマンドのオプション
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "-uu",
+          },
+        },
+        extensions = {
+          -- ソート性能を大幅に向上させるfzfを使う
+          fzf = {
+            fuzzy = true,
+            override_generic_sorter = true,
+            override_file_sorter = true,
+            case_mode = "smart_case",
+          },
+        },
+      })
+      require("telescope").load_extension("fzf")
+    end
   },
 
   {
@@ -177,8 +217,9 @@ return {
           "vue",
           "dockerfile",
           "prisma",
+          "python",
         },
-        highlight = { enable = true },
+        highlight = { enable = true, disable = { "markdown" } },
         autotag = { enable = true },
         indent = { enable = false },
         yati = { enable = true, disable = { "markdown" } },
@@ -187,115 +228,45 @@ return {
   },
 
   {
-    "stevearc/conform.nvim",
-    opts = {
-      formatters_by_ft = {
-        json = { { "prettierd", "prettier" } },
-        yaml = { { "prettierd", "prettier" } },
-        javascript = { { "prettierd", "prettier" } },
-        typescript = { { "prettierd", "prettier" } },
-        typescriptreact = { { "prettierd", "prettier" } },
-        python = { "isort", "black" }
-      },
-      format_on_save = {
-        timeout_ms = 3000,
-        lsp_format = "fallback",
-        quiet = false,
-      },
-    },
-  },
-
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-vsnip",
-      "onsails/lspkind.nvim",
-    },
-    event = "InsertEnter",
+    "neoclide/coc.nvim",
+    branch = "release",
     config = function()
-      local cmp = require("cmp")
-      local lspkind = require("lspkind")
-      cmp.setup({
-        window = {
-          completion = cmp.config.window.bordered({
-            border = "rounded",
-          }),
-          documentation = cmp.config.window.bordered({
-            border = "rounded",
-          }),
-        },
-        mapping = cmp.mapping.preset.insert({
-          ["<Tab>"] = cmp.mapping.select_next_item(),
-          ["<S-Tab>"] = cmp.mapping.select_prev_item(),
-          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-          ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.complete(),
-          ["<C-e>"] = cmp.mapping.abort(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }),
-        }),
-        formatting = {
-          format = lspkind.cmp_format({
-            mode = "symbol",
-            maxwidth = 50,
-            ellipsis_char = "...",
-          }),
-        },
-        sources = cmp.config.sources({
-          { name = "nvim_lsp" },
-          { name = "vsnip" },
-          { name = "path" },
-        }, {
-          { name = "buffer", keyword_length = 2 },
-        }),
-      })
-      local capabilities = require("cmp_nvim_lsp").default_capabilities()
-      vim.cmd("let g:vsnip_filetypes = {}")
-    end,
-  },
+      vim.g.coc_global_extensions = {
+        "coc-json",
+        "coc-tsserver",
+        "coc-yaml",
+        "coc-prettier",
+        "coc-prisma",
+        "coc-pyright",
+        "@yaegassy/coc-volar",
+        "@yaegassy/coc-tailwindcss3"
+      }
 
-  {
-    "neovim/nvim-lspconfig",
-    config = function()
-      local lspconfig = require("lspconfig")
+      local keymap = vim.api.nvim_set_keymap
+      local opts = {silent = true, noremap = true, expr = true, replace_keycodes = false}
 
-      lspconfig.tsserver.setup({
-        filetypes = {
-          "javascript",
-          "javascriptreact",
-          "typescript",
-          "typescriptreact",
-        },
-      })
+      -- Autocomplete
+      function _G.check_back_space()
+        local col = vim.fn.col('.') - 1
+        return col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') ~= nil
+      end
 
-      lspconfig.tailwindcss.setup({})
+      -- Use F to show documentation in preview window
+      function _G.show_docs()
+        local cw = vim.fn.expand('<cword>')
+        if vim.fn.index({'vim', 'help'}, vim.bo.filetype) >= 0 then
+          vim.api.nvim_command('h ' .. cw)
+        elseif vim.api.nvim_eval('coc#rpc#ready()') then
+          vim.fn.CocActionAsync('doHover')
+        else
+          vim.api.nvim_command('!' .. vim.o.keywordprg .. ' ' .. cw)
+        end
+      end
 
-      lspconfig.jedi_language_server.setup({})
-
-      vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(_)
-          vim.keymap.set("n", "F", "<cmd>lua vim.lsp.buf.hover()<CR>")
-          vim.keymap.set("n", "g]", "<cmd>lua vim.diagnostic.goto_next()<CR>")
-          vim.keymap.set("n", "g[", "<cmd>lua vim.diagnostic.goto_prev()<CR>")
-          vim.keymap.set("n", "f", "<cmd>lua vim.diagnostic.open_float()<CR>")
-        end,
-      })
-
-      vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
-
-      vim.diagnostic.config({ float = { border = "rounded" } })
-
-      vim.lsp.handlers["textDocument/publishDiagnostics"] =
-        vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, { virtual_text = false })
-
-      vim.api.nvim_create_autocmd("LspAttach", {
-        callback = function(args)
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
-          client.server_capabilities.semanticTokensProvider = nil
-        end,
-      })
-    end,
-  },
+      keymap("i", "<TAB>", 'coc#pum#visible() ? coc#pum#next(1) : v:lua.check_back_space() ? "<TAB>" : coc#refresh()', opts)
+      keymap("i", "<S-TAB>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"]], opts)
+      keymap("i", "<cr>", [[coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"]], opts)
+      keymap("n", "F", '<CMD>lua _G.show_docs()<CR>', {silent = true})
+    end
+  }
 }

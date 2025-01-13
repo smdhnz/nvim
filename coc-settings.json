@@ -1,0 +1,22 @@
+{
+  "prettier.enable": true,
+  "coc.preferences.formatOnSave": true,
+  "diagnostic.floatConfig": {
+    "border": true,
+    "rounded": true
+  },
+  "hover.floatConfig": {
+    "border": true,
+    "rounded": true
+  },
+  "suggest.floatConfig": {
+    "border": true,
+    "rounded": true
+  },
+  "pyright.inlayHints.functionReturnTypes": false,
+  "pyright.inlayHints.variableTypes": false,
+  "pyright.inlayHints.parameterTypes": false,
+  "python.formatting.provider": "black",
+  "pyright.organizeimports.provider": "isort",
+  "python.sortImports.path": "isort"
+}
